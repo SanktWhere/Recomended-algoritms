@@ -14,7 +14,7 @@ class Claster {
 
   //Удалить вектор признаков из кластера
   remove(person_index) {
-    this.people = this.people.slice(person_index, 1);
+    this.people.splice(person_index, 1);
   }
 
   //Возвратить центр кластера
@@ -48,12 +48,11 @@ class Claster {
     let gd = 0.0;
 
     for (const key in person) {
-      gd += (this.vcentroid[key]) * (this.vcentroid[key])
+      gd += (this.vcentroid[key] - person[key]) * (this.vcentroid[key] - person[key])
     }
     
     gd = Math.sqrt(gd);
 
-    console.log("gd =", gd);
     return gd;
   }
 }
@@ -90,18 +89,24 @@ function kmeans() {
 
       console.log("Проверка членов 1 кластера относительно 2");
       for (const key in people1) {
+        console.log("people in claster 1 distance to claster 2", claster2.calculate_gd(people1[key]));
+        console.log("people in claster 1 distance to claster 1", claster1.calculate_gd(people1[key]));
         if (claster2.calculate_gd(people1[key]) < claster1.calculate_gd(people1[key])) {
-          claster1.remove(key);
+          console.log("Put from first to second");
           claster2.add(people1[key]);
+          claster1.remove(key);
           changed = true;
         }
       }
 
       console.log("Проверка членов 2 кластера относительно 1");
       for (const key in people2) {
+        console.log("people in claster 2 distance to claster 2", claster2.calculate_gd(people2[key]));
+        console.log("people in claster 2 distance to claster 1", claster1.calculate_gd(people2[key]));
         if (claster1.calculate_gd(people2[key]) < claster2.calculate_gd(people2[key])) {
+          console.log("Put from second to first");
+          claster1.add(people2[key]);
           claster2.remove(key);
-          claster1.add(people1[key]);
           changed = true;
         }
       }
